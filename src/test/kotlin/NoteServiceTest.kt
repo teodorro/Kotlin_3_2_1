@@ -8,109 +8,118 @@ class NoteServiceTest {
 
     @Test
     fun add_Added() {
-        val id = NoteService.add("title", "text")
+        val id = NoteService().add("title", "text")
 
         assertTrue(id > 0)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun add_EmptyTextAndTitle() {
-        NoteService.add("", "")
+        NoteService().add("", "")
     }
 
     @Test
     fun delete_ExistingNote() {
-        val id = NoteService.add("title", "text")
+        val noteService = NoteService()
+        val id = noteService.add("title", "text")
 
-        val res = NoteService.delete(id)
+        val res = noteService.delete(id)
 
         assertTrue(res)
     }
 
-    @Test()
+    @Test
     fun delete_NotExistingNote() {
-        val id = NoteService.add("title", "text")
+        val noteService = NoteService()
+        noteService.add("title", "text")
 
-        val res = NoteService.delete(123)
+        val res = noteService.delete(123)
 
         assertFalse(res)
     }
 
     @Test
     fun edit_ExistingNote() {
-        val id = NoteService.add("title", "text")
+        val noteService = NoteService()
+        val id = noteService.add("title", "text")
 
-        val res = NoteService.edit(id, "asd", "qwe")
+        val res = noteService.edit(id, "asd", "qwe")
 
         assertTrue(res)
 
-        var note = NoteService.getById(id)
+        val note = noteService.getById(id)
         assertEquals(note.text, "qwe")
         assertEquals(note.title, "asd")
     }
 
     @Test
     fun edit_NotExistingNote() {
-        val id = NoteService.add("title", "text")
+        val noteService = NoteService()
+        noteService.add("title", "text")
 
-        val res = NoteService.edit(123, "asd", "qwe")
+        val res = noteService.edit(123, "asd", "qwe")
 
         assertFalse(res)
     }
 
-    @Test()
+    @Test
     fun edit_EmptyTextAndTitle() {
-        val id = NoteService.add("title", "text")
+        val noteService = NoteService()
+        val id = noteService.add("title", "text")
 
-        val res = NoteService.edit(id, "", "")
+        val res = noteService.edit(id, "", "")
 
-        assertFalse(res);
+        assertFalse(res)
     }
 
     @Test
     fun get_ExistAll() {
-        val id1 = NoteService.add("title1", "text1")
-        val id2 = NoteService.add("title2", "text2")
+        val noteService = NoteService()
+        val id1 = noteService.add("title1", "text1")
+        val id2 = noteService.add("title2", "text2")
 
-        val notes = NoteService.get(mutableListOf(id1, id2))
+        val notes = noteService.get(mutableListOf(id1, id2))
 
         assertEquals(2, notes.count())
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun get_ExistNotAll() {
-        val id1 = NoteService.add("title1", "text1")
-        val id2 = NoteService.add("title2", "text2")
+        val noteService = NoteService()
+        val id1 = noteService.add("title1", "text1")
+        noteService.add("title2", "text2")
 
-        val notes = NoteService.get(mutableListOf(id1, 123))
+        noteService.get(mutableListOf(id1, 123))
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun get_NoNotesExist() {
-        val notes = NoteService.get(mutableListOf(123))
+        NoteService().get(mutableListOf(123))
     }
 
     @Test
     fun getById_NoteWithIdExists() {
-        val id1 = NoteService.add("title1", "text1")
-        val id2 = NoteService.add("title2", "text2")
+        val noteService = NoteService()
+        noteService.add("title1", "text1")
+        val id2 = noteService.add("title2", "text2")
 
-        val note = NoteService.getById(id2)
+        val note = noteService.getById(id2)
 
         assertEquals(id2, note.id)
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun getById_NoteWithIdNotExists() {
-        val id1 = NoteService.add("title1", "text1")
-        val id2 = NoteService.add("title2", "text2")
+        val noteService = NoteService()
+        noteService.add("title1", "text1")
+        noteService.add("title2", "text2")
 
-        val note = NoteService.getById(123)
+        noteService.getById(123)
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun getById_NoNotesExist() {
-        val note = NoteService.getById(123)
+        NoteService().getById(123)
     }
 
     // endregion Notes
@@ -120,169 +129,186 @@ class NoteServiceTest {
 
     @Test
     fun createComment_Added() {
-        val noteId = NoteService.add("title", "text")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
 
-        val commentId = NoteService.createComment(noteId, "asd")
+        val commentId = noteService.createComment(noteId, "asd")
 
         assertTrue(commentId > 0)
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun createComment_NoteNotExists() {
-        val noteId = NoteService.add("title", "text")
+        val noteService = NoteService()
+        noteService.add("title", "text")
 
-        val commentId = NoteService.createComment(123, "asd")
+        noteService.createComment(123, "asd")
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun createComment_CommentEmpty() {
-        val noteId = NoteService.add("title", "text")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
 
-        val commentId = NoteService.createComment(noteId, "")
+        noteService.createComment(noteId, "")
     }
 
     @Test
     fun deleteComment_Deleted() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId = noteService.createComment(noteId, "asd")
 
-        var res = NoteService.deleteComment(commentId);
+        val res = noteService.deleteComment(commentId)
 
         assertTrue(res)
     }
 
     @Test
     fun deleteComment_DeleteDeleted() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
-        var res0 = NoteService.deleteComment(commentId);
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId = noteService.createComment(noteId, "asd")
+        noteService.deleteComment(commentId)
 
-        var res = NoteService.deleteComment(commentId);
+        val res = noteService.deleteComment(commentId)
 
         assertFalse(res)
     }
 
     @Test
     fun deleteComment_CommentNotExists() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        noteService.createComment(noteId, "asd")
 
-        var res = NoteService.deleteComment(123)
+        val res = noteService.deleteComment(123)
 
         assertFalse(res)
     }
 
     @Test
     fun editComment_Edited() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId = noteService.createComment(noteId, "asd")
 
-        var res = NoteService.editComment(commentId, "qwe")
+        val res = noteService.editComment(commentId, "qwe")
 
         assertTrue(res)
     }
 
     @Test
     fun editComment_CommentNotExists() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        noteService.createComment(noteId, "asd")
 
-        val res = NoteService.editComment(123, "qwe")
+        val res = noteService.editComment(123, "qwe")
         assertFalse(res)
     }
 
     @Test
     fun editComment_CommentDeleted() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
-        NoteService.deleteComment(commentId)
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId = noteService.createComment(noteId, "asd")
+        noteService.deleteComment(commentId)
 
-        val res = NoteService.editComment(123, "qwe")
+        val res = noteService.editComment(123, "qwe")
 
         assertFalse(res)
     }
 
     @Test
     fun editComment_CommentEmpty() {
-        val noteId = NoteService.add("title", "text")
-        val commentId = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId = noteService.createComment(noteId, "asd")
 
-        val res = NoteService.editComment(commentId, "")
+        val res = noteService.editComment(commentId, "")
 
         assertFalse(res)
     }
 
     @Test
     fun getComments_Got() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        val commentId2 = NoteService.createComment(noteId, "qwe")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        noteService.createComment(noteId, "asd")
+        noteService.createComment(noteId, "qwe")
 
-        var comments = NoteService.getComments(noteId)
+        val comments = noteService.getComments(noteId)
 
         assertEquals(2, comments.count())
     }
 
     @Test(expected = NoteNotFoundException::class)
     fun getComments_NoteNotExists() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        val commentId2 = NoteService.createComment(noteId, "qwe")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        noteService.createComment(noteId, "asd")
+        noteService.createComment(noteId, "qwe")
 
-        var comments = NoteService.getComments(123)
+        noteService.getComments(123)
     }
 
     @Test
     fun getComments_ReturnsWithoutDeleted() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        val commentId2 = NoteService.createComment(noteId, "qwe")
-        NoteService.deleteComment(commentId1)
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId1 = noteService.createComment(noteId, "asd")
+        noteService.createComment(noteId, "qwe")
+        noteService.deleteComment(commentId1)
 
-        var comments = NoteService.getComments(noteId)
+        val comments = noteService.getComments(noteId)
 
         assertEquals(1, comments.count())
     }
 
     @Test
     fun restoreComment_Restored() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        NoteService.deleteComment(commentId1)
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId1 = noteService.createComment(noteId, "asd")
+        noteService.deleteComment(commentId1)
 
-        var res = NoteService.restoreComment(commentId1)
+        val res = noteService.restoreComment(commentId1)
 
         assertTrue(res)
     }
 
     @Test
     fun restoreComment_CommentNotExists() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        NoteService.deleteComment(commentId1)
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId1 = noteService.createComment(noteId, "asd")
+        noteService.deleteComment(commentId1)
 
-        var res = NoteService.restoreComment(123)
+        val res = noteService.restoreComment(123)
 
         assertFalse(res)
     }
 
     @Test
     fun restoreComment_RestoreExisting() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId1 = noteService.createComment(noteId, "asd")
 
-        var res = NoteService.restoreComment(commentId1)
+        val res = noteService.restoreComment(commentId1)
 
         assertTrue(res)
     }
 
     @Test
     fun restoreComment_RestoreFromDeletedNote() {
-        val noteId = NoteService.add("title", "text")
-        val commentId1 = NoteService.createComment(noteId, "asd")
-        NoteService.delete(noteId)
+        val noteService = NoteService()
+        val noteId = noteService.add("title", "text")
+        val commentId1 = noteService.createComment(noteId, "asd")
+        noteService.delete(noteId)
 
-        var res = NoteService.restoreComment(commentId1)
+        val res = noteService.restoreComment(commentId1)
 
         assertFalse(res)
     }

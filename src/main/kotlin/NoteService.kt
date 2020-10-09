@@ -1,7 +1,7 @@
 import Exceptions.NoteNotFoundException
 import java.lang.IllegalArgumentException
 
-object NoteService {
+class NoteService {
     private var nextId = 1;
     private var notes = mutableListOf<Note>();
 
